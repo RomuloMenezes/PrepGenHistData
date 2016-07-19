@@ -28,71 +28,164 @@ namespace PrepGenHistData
         private void button2_Click(object sender, EventArgs e)
         {
             if (textBox1.Text == "")
-                MessageBox.Show("Please select a source folder", "Error", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+                MessageBox.Show("Please select a source folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
-                DirectoryInfo rootFolder = new DirectoryInfo(textBox1.Text);
-                Microsoft.Office.Interop.Excel.Application xlSourceApp = new Microsoft.Office.Interop.Excel.Application();
-                Microsoft.Office.Interop.Excel.Application xlTargetApp = new Microsoft.Office.Interop.Excel.Application();
-                Workbook xlSourceWorkBook;
-                Workbook xlTargetWorkBook;
-                Worksheet xlCurrSourceWorkSheet;
-                Worksheet xlTargetWorkSheet;
-                int iIndex = 0;
-                int xIndex, yIndex;
-                int year;
-                int targetWBRowIndex = 2;
-                int yUpperLimit;
-                int yOffset;
-                string currMessage = "";
+                if (!radioButton1.Checked && !radioButton2.Checked)
+                {
+                    MessageBox.Show("Please select a type of historical data", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    Cursor.Current = Cursors.WaitCursor;
 
-                xlTargetWorkBook = xlTargetApp.Workbooks.Open("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\geração\\SínteseGeração.xlsx");
-                xlTargetWorkSheet = xlTargetWorkBook.Worksheets[1];
-                xlTargetWorkSheet.Cells[1, 1] = "Data";
-                xlTargetWorkSheet.Cells[1, 2] = "Tipo de geração";
-                xlTargetWorkSheet.Cells[1, 3] = "Região";
-                xlTargetWorkSheet.Cells[1, 4] = "Unidade";
-                xlTargetWorkSheet.Cells[1, 5] = "Montante";
+                    DirectoryInfo rootFolder = new DirectoryInfo(textBox1.Text);
+                    Microsoft.Office.Interop.Excel.Application xlSourceApp = new Microsoft.Office.Interop.Excel.Application();
+                    Microsoft.Office.Interop.Excel.Application xlTargetApp = new Microsoft.Office.Interop.Excel.Application();
+                    Workbook xlSourceWorkBook;
+                    Workbook xlTargetWorkBook;
+                    Worksheet xlCurrSourceWorkSheet;
+                    Worksheet xlTargetWorkSheet;
 
-                foreach(DirectoryInfo currFolder in rootFolder.GetDirectories("geracao_*")){
-                    if (currFolder.Name.IndexOf("nuclear") > 0){
-                        yUpperLimit = 2;
-                        yOffset = 5;
+                    int yUpperLimit;
+                    int iIndex = 0;
+                    int xIndex, yIndex;
+                    int year;
+                    int targetWBRowIndex = 2;
+                    string currMessage = "";
+
+                    // Delete file if it exists, and create a new, empty one
+                    if (File.Exists("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx"))
+                    {
+                        File.Delete("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx");
                     }
-                    else{
-                        yUpperLimit = 7;
-                        yOffset = 10;
-                    }
-                    xlSourceWorkBook = xlSourceApp.Workbooks.Open(currFolder.GetFiles()[0].FullName);
-                    for (iIndex = 1; iIndex <= xlSourceWorkBook.Worksheets.Count; iIndex++) {
-                        xlCurrSourceWorkSheet = xlSourceWorkBook.Worksheets[iIndex];
-                        if (xlCurrSourceWorkSheet.Cells[1, 1].Value != null){
-                            year = Convert.ToInt16(xlCurrSourceWorkSheet.Cells[2, 1].Value);
-                            currMessage = Convert.ToString(year) + Environment.NewLine + currFolder.Name.Substring(8);
-                            textBox2.Text = currMessage;
-                            textBox2.Refresh();
-                            for (yIndex = 1; yIndex <= yUpperLimit; yIndex++) {
-                                for (xIndex = 1; xIndex <= 12; xIndex++) {
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2].Value;
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2 + xIndex].Value;
-                                    targetWBRowIndex++;
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 1].Value;
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 2].Value;
-                                    xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 2 + xIndex].Value;
-                                    targetWBRowIndex++;
+
+                    xlTargetWorkBook = xlTargetApp.Workbooks.Add();
+                    xlTargetWorkBook.SaveAs("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx");
+
+                    //xlTargetWorkBook = xlTargetApp.Workbooks.Open("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx");
+                    xlTargetWorkSheet = xlTargetWorkBook.Worksheets[1];
+                    xlTargetWorkSheet.Cells[1, 1] = "Data";
+                    xlTargetWorkSheet.Cells[1, 2] = "Medida";
+                    xlTargetWorkSheet.Cells[1, 3] = "Região";
+                    xlTargetWorkSheet.Cells[1, 4] = "Unidade";
+                    xlTargetWorkSheet.Cells[1, 5] = "Montante";
+
+                    if (radioButton1.Checked) // Geração
+                    {
+                        int yOffset;
+                        foreach (DirectoryInfo currFolder in rootFolder.GetDirectories("geracao_*"))
+                        {
+                            if (currFolder.Name.IndexOf("nuclear") > 0)
+                            {
+                                yUpperLimit = 2;
+                                yOffset = 5;
+                            }
+                            else
+                            {
+                                yUpperLimit = 7;
+                                yOffset = 10;
+                            }
+                            xlSourceWorkBook = xlSourceApp.Workbooks.Open(currFolder.GetFiles()[0].FullName);
+                            for (iIndex = 1; iIndex <= xlSourceWorkBook.Worksheets.Count; iIndex++)
+                            {
+                                xlCurrSourceWorkSheet = xlSourceWorkBook.Worksheets[iIndex];
+                                if (xlCurrSourceWorkSheet.Cells[1, 1].Value != null)
+                                {
+                                    year = Convert.ToInt16(xlCurrSourceWorkSheet.Cells[2, 1].Value);
+                                    currMessage = Convert.ToString(year) + Environment.NewLine + currFolder.Name.Substring(8);
+                                    textBox2.Text = currMessage;
+                                    textBox2.Refresh();
+                                    for (yIndex = 1; yIndex <= yUpperLimit; yIndex++)
+                                    {
+                                        for (xIndex = 1; xIndex <= 12; xIndex++)
+                                        {
+                                            // Data - Medida (geração, energia armazenada) - Região - Unidade - Montante
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2 + xIndex].Value;
+                                            targetWBRowIndex++;
+                                            // xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 1].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 2].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 2 + xIndex].Value;
+                                            targetWBRowIndex++;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    else if (radioButton2.Checked) // Energia armazenada
+                    {
+                        int GWhOffset;
+                        int MWMesOffset;
+                        yUpperLimit = 6;
+
+                        foreach (DirectoryInfo currFolder in rootFolder.GetDirectories("*_armazenada"))
+                        {
+                            xlSourceWorkBook = xlSourceApp.Workbooks.Open(currFolder.FullName + "\\energia_armazenada_mensal.xls");
+                            for (iIndex = 1; iIndex <= xlSourceWorkBook.Worksheets.Count; iIndex++)
+                            {
+                                xlCurrSourceWorkSheet = xlSourceWorkBook.Worksheets[iIndex];
+                                if (xlCurrSourceWorkSheet.Cells[1, 1].Value != null)
+                                {
+                                    year = Convert.ToInt16(xlCurrSourceWorkSheet.Name);
+
+                                    if (year < 2004)
+                                    {
+                                        GWhOffset = 9;
+                                        MWMesOffset = 16;
+                                    }
+                                    else
+                                    {
+                                        GWhOffset = 10;
+                                        MWMesOffset = 18;
+                                    }
+
+                                    currMessage = Convert.ToString(year) + Environment.NewLine + currFolder.Name;
+                                    textBox2.Text = currMessage;
+                                    textBox2.Refresh();
+                                    for (yIndex = 1; yIndex <= yUpperLimit; yIndex++)
+                                    {
+                                        for (xIndex = 1; xIndex <= 12; xIndex++)
+                                        {
+                                            // Data - Medida (geração, energia armazenada) - Região - Unidade - Montante
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
+                                            // xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2 + xIndex].Value;
+                                            targetWBRowIndex++;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[GWhOffset + yIndex, 1].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[GWhOffset + yIndex, 2].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[GWhOffset + yIndex, 2 + xIndex].Value;
+                                            targetWBRowIndex++;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[MWMesOffset + yIndex, 1].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[MWMesOffset + yIndex, 2].Value;
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[MWMesOffset + yIndex, 2 + xIndex].Value;
+                                            targetWBRowIndex++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    xlSourceApp.Quit();
+                    xlTargetWorkBook.Save();
+                    xlTargetApp.Quit();
+                    Cursor.Current = Cursors.Default;
+                    MessageBox.Show("Data tidied up", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                xlSourceApp.Quit();
-                xlTargetWorkBook.Save();
-                xlTargetApp.Quit();
             }
         }
     }
