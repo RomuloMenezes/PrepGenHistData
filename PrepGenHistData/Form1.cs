@@ -101,14 +101,13 @@ namespace PrepGenHistData
                                         for (xIndex = 1; xIndex <= 12; xIndex++)
                                         {
                                             // Data - Medida (geração, energia armazenada) - Região - Unidade - Montante
-                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2 + xIndex].Value;
                                             targetWBRowIndex++;
-                                            // xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
-                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 1].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[yOffset + yIndex, 2].Value;
@@ -155,20 +154,19 @@ namespace PrepGenHistData
                                         for (xIndex = 1; xIndex <= 12; xIndex++)
                                         {
                                             // Data - Medida (geração, energia armazenada) - Região - Unidade - Montante
-                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
-                                            // xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + Convert.ToString(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 2 + xIndex].Value;
                                             targetWBRowIndex++;
-                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[GWhOffset + yIndex, 1].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[GWhOffset + yIndex, 2].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[GWhOffset + yIndex, 2 + xIndex].Value;
                                             targetWBRowIndex++;
-                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = "\'" + xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value + "/" + Convert.ToString(year);
+                                            xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[MWMesOffset + yIndex, 1].Value;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = xlCurrSourceWorkSheet.Cells[MWMesOffset + yIndex, 2].Value;
@@ -187,6 +185,41 @@ namespace PrepGenHistData
                     MessageBox.Show("Data tidied up", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
+        }
+
+        private string correctMonthName(string inputName)
+        {
+            string returnValue;
+
+            switch (inputName)
+            {
+                case "Fev":
+                    returnValue = "Feb";
+                    break;
+                case "Abr":
+                    returnValue = "Apr";
+                    break;
+                case "Mai":
+                    returnValue = "May";
+                    break;
+                case "Ago":
+                    returnValue = "Aug";
+                    break;
+                case "Set":
+                    returnValue = "Sep";
+                    break;
+                case "Out":
+                    returnValue = "Oct";
+                    break;
+                case "Dez":
+                    returnValue = "Dec";
+                    break;
+                default:
+                    returnValue = inputName;
+                    break;
+            }
+
+            return (returnValue);
         }
     }
 }
