@@ -83,8 +83,16 @@ namespace PrepGenHistData
                             }
                             else
                             {
-                                yUpperLimit = 7;
-                                yOffset = 10;
+                                if (currFolder.Name.IndexOf("hidraulica") > 0) // Inclui o subsistema Itaipu, portanto um a mais que os demais tipos de geração
+                                {
+                                    yUpperLimit = 8;
+                                    yOffset = 11;
+                                }
+                                else
+                                {
+                                    yUpperLimit = 7;
+                                    yOffset = 10;
+                                }
                             }
                             xlSourceWorkBook = xlSourceApp.Workbooks.Open(currFolder.GetFiles()[0].FullName);
                             for (iIndex = 1; iIndex <= xlSourceWorkBook.Worksheets.Count; iIndex++)
@@ -100,7 +108,7 @@ namespace PrepGenHistData
                                     {
                                         for (xIndex = 1; xIndex <= 12; xIndex++)
                                         {
-                                            // Data - Medida (geração, energia armazenada) - Região - Unidade - Montante
+                                            // Data - Medida (emergencial, eólica, hidráulica, nuclear, térmica, térmica a gás) - Região - Unidade - Montante
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name.Substring(8);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
@@ -153,7 +161,7 @@ namespace PrepGenHistData
                                     {
                                         for (xIndex = 1; xIndex <= 12; xIndex++)
                                         {
-                                            // Data - Medida (geração, energia armazenada) - Região - Unidade - Montante
+                                            // Data - Medida (energia armazenada) - Região - Unidade - Montante
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[2, 2 + xIndex].Value) + "/" + Convert.ToString(year);
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = currFolder.Name;
                                             xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = xlCurrSourceWorkSheet.Cells[2 + yIndex, 1].Value;
