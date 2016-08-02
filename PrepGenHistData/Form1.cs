@@ -55,15 +55,14 @@ namespace PrepGenHistData
                     string currMessage = "";
 
                     // Delete file if it exists, and create a new, empty one
-                    if (File.Exists("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx"))
+                    if (File.Exists("D:\\_GIT\\Projetos\\Novo Site\\Planilhas histórico\\Tableau\\TidyData.xlsx"))
                     {
-                        File.Delete("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx");
+                        File.Delete("D:\\_GIT\\Projetos\\Novo Site\\Planilhas histórico\\Tableau\\TidyData.xlsx");
                     }
 
                     xlTargetWorkBook = xlTargetApp.Workbooks.Add();
-                    xlTargetWorkBook.SaveAs("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx");
+                    xlTargetWorkBook.SaveAs("D:\\_GIT\\Projetos\\Novo Site\\Planilhas histórico\\Tableau\\TidyData.xlsx");
 
-                    //xlTargetWorkBook = xlTargetApp.Workbooks.Open("D:\\_GIT\\Projetos\\Novo Site\\planilhas\\Tableau\\TidyData.xlsx");
                     xlTargetWorkSheet = xlTargetWorkBook.Worksheets[1];
                     xlTargetWorkSheet.Cells[1, 1] = "Data";
                     xlTargetWorkSheet.Cells[1, 2] = "Medida";

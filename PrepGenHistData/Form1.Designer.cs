@@ -43,7 +43,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(294, 20);
             this.textBox1.TabIndex = 0;
-            this.textBox1.Text = "D:\\_GIT\\Projetos\\Novo Site\\planilhas";
+            this.textBox1.Text = "D:\\_GIT\\Projetos\\Novo Site\\Planilhas histórico";
             // 
             // button1
             // 
@@ -75,7 +75,7 @@
             // 
             // folderBrowserDialog1
             // 
-            this.folderBrowserDialog1.SelectedPath = "D:\\_GIT\\Projetos\\Novo Site\\planilhas";
+            this.folderBrowserDialog1.SelectedPath = "D:\\_GIT\\Projetos\\Novo Site\\Planilhas histórico";
             // 
             // radioButton1
             // 
