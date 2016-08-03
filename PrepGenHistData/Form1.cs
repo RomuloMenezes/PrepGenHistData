@@ -31,7 +31,7 @@ namespace PrepGenHistData
                 MessageBox.Show("Please select a source folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
-                if (!radioButton1.Checked && !radioButton2.Checked)
+                if (!radioButton1.Checked && !radioButton2.Checked && !radioButton3.Checked)
                 {
                     MessageBox.Show("Please select a type of historical data", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -185,6 +185,53 @@ namespace PrepGenHistData
                             }
                         }
                     }
+                    else if(radioButton3.Checked) // Histórico de vazões
+                    {
+                        int monthIndex;
+                        int innerUsinaYIndex;
+                        string strYear = "";
+                        string nomeUsina = "";
+
+                        foreach (DirectoryInfo currFolder in rootFolder.GetDirectories("*Histórico de Vazões*"))
+                        {
+                            xlSourceWorkBook = xlSourceApp.Workbooks.Open(currFolder.FullName + "\\Vazões_Mensais_1931_2014.xls");
+                            xlCurrSourceWorkSheet = xlSourceWorkBook.Worksheets["Tabela"];
+
+                            // yUpperLimit = xlCurrSourceWorkSheet.UsedRange.Rows.Count;
+                            yUpperLimit = 17088;
+                            yIndex = 1;
+                            innerUsinaYIndex = 1;
+
+                            while(yIndex<=yUpperLimit)
+                            {
+                                nomeUsina = xlCurrSourceWorkSheet.Cells[yIndex, 1].Value;
+                                nomeUsina = nomeUsina.Substring(0, nomeUsina.IndexOf("(") - 1);
+                                yIndex++; monthIndex = yIndex;
+                                yIndex++;
+                                while (innerUsinaYIndex <= 84) // 84 anos de histórico
+                                {
+                                    // Data - Medida ("Vazão") - Região (usina) - Unidade ("m3/s") - Montante
+                                    strYear = Convert.ToString(xlCurrSourceWorkSheet.Cells[yIndex, 1].Value);
+                                    currMessage = strYear + Environment.NewLine + nomeUsina;
+                                    textBox2.Text = currMessage;
+                                    textBox2.Refresh();
+                                    for (xIndex = 2; xIndex <= 13; xIndex++) // Notar que xIndex começa em 2, e por isso termina em 13
+                                    {
+                                        xlTargetWorkSheet.Cells[targetWBRowIndex, 1].Value = correctMonthName(xlCurrSourceWorkSheet.Cells[monthIndex, xIndex].Value) + "/" + strYear;
+                                        xlTargetWorkSheet.Cells[targetWBRowIndex, 2].Value = "Vazão";
+                                        xlTargetWorkSheet.Cells[targetWBRowIndex, 3].Value = nomeUsina;
+                                        xlTargetWorkSheet.Cells[targetWBRowIndex, 4].Value = "m3/s";
+                                        xlTargetWorkSheet.Cells[targetWBRowIndex, 5].Value = xlCurrSourceWorkSheet.Cells[yIndex, xIndex].Value;
+                                        targetWBRowIndex++;
+                                    }
+                                    yIndex++;
+                                    innerUsinaYIndex++;
+                                }
+                                yIndex += 3; // Pulando MIN, MED e MAX
+                                innerUsinaYIndex = 1;
+                            }
+                        }
+                    }
                     xlSourceApp.Quit();
                     xlTargetWorkBook.Save();
                     xlTargetApp.Quit();
@@ -198,27 +245,27 @@ namespace PrepGenHistData
         {
             string returnValue;
 
-            switch (inputName)
+            switch (inputName.ToUpper())
             {
-                case "Fev":
+                case "FEV":
                     returnValue = "Feb";
                     break;
-                case "Abr":
+                case "ABR":
                     returnValue = "Apr";
                     break;
-                case "Mai":
+                case "MAI":
                     returnValue = "May";
                     break;
-                case "Ago":
+                case "AGO":
                     returnValue = "Aug";
                     break;
-                case "Set":
+                case "SET":
                     returnValue = "Sep";
                     break;
-                case "Out":
+                case "OUT":
                     returnValue = "Oct";
                     break;
-                case "Dez":
+                case "DEZ":
                     returnValue = "Dec";
                     break;
                 default:
